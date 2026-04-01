@@ -1,6 +1,5 @@
 import DefaultTheme from 'vitepress/theme'
 import MyLayout from './Layout.vue'
-import './custom.css' // 如果你以后想写自定义 CSS，可以先留着这一行
 
 export default {
   extends: DefaultTheme,
