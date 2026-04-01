@@ -6,9 +6,8 @@ import { onMounted, watch, nextTick } from 'vue'
 const { Layout } = DefaultTheme
 const { route, frontmatter } = useData()
 
-// 这里的函数用于初始化和更新 Giscus 评论区
 const updateGiscus = () => {
-  // 如果是首页 (layout: home)，通常不显示评论区
+  // 首页不加载评论
   if (frontmatter.value.layout === 'home') return
 
   const script = document.createElement('script')
@@ -21,7 +20,7 @@ const updateGiscus = () => {
   script.setAttribute('data-reactions-enabled', "1")
   script.setAttribute('data-emit-metadata', "0")
   script.setAttribute('data-input-position', "top")
-  script.setAttribute('data-theme', "transparent_dark") // 你可以改成 light 或 dark
+  script.setAttribute('data-theme', "preferred_color_scheme")
   script.setAttribute('data-lang', "zh-CN")
   script.setAttribute('data-loading', "lazy")
   script.setAttribute('crossorigin', "anonymous")
@@ -34,21 +33,14 @@ const updateGiscus = () => {
   }
 }
 
-onMounted(() => {
-  updateGiscus()
-})
-
-// 路由变化时重新加载评论区
-watch(
-  () => route.path,
-  () => nextTick(() => updateGiscus())
-)
+onMounted(() => updateGiscus())
+watch(() => route.path, () => nextTick(() => updateGiscus()))
 </script>
 
 <template>
   <Layout>
     <template #doc-after>
-      <div id="giscus-container" style="margin-top: 3rem; border-top: 1px solid var(--vp-c-divider); padding-top: 2rem;"></div>
+      <div id="giscus-container" style="margin-top: 3rem;"></div>
     </template>
   </Layout>
 </template>
