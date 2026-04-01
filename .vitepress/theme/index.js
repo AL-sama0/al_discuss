@@ -1,17 +1,12 @@
-import { h } from "vue";
-import type { Theme } from "vitepress";
-
-import "@escook/vitepress-theme/style.css";
-import "./style.css";
-import myLayout from "./components/myLayout.vue";
-
-import dataShow from "./components/dataShow.vue";
+import DefaultTheme from 'vitepress/theme'
+import MyLayout from './Layout.vue'
+import './custom.css' // 如果你以后想写自定义 CSS，可以先留着这一行
 
 export default {
-	Layout: () => {
-		return h(myLayout, null, {});
-	},
-	enhanceApp({ app, router, siteData }) {
-		app.component("dataShow", dataShow);
-	},
-} satisfies Theme;
+  extends: DefaultTheme,
+  // 使用我们自定义的 Layout
+  Layout: MyLayout,
+  enhanceApp({ app, router, siteData }) {
+    // 你可以在这里注册全局组件
+  }
+}

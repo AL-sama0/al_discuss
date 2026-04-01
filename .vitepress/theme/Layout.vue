@@ -1,39 +1,54 @@
-<script setup lang="ts">
-import Giscus from "@giscus/vue";
+<script setup>
+import DefaultTheme from 'vitepress/theme'
+import { useData } from 'vitepress'
+import { onMounted, watch, nextTick } from 'vue'
 
-import escookTheme from "@escook/vitepress-theme";
-import { watch } from "vue";
-import { inBrowser, useData } from "vitepress";
+const { Layout } = DefaultTheme
+const { route, frontmatter } = useData()
 
-const { isDark, page } = useData();
+// 这里的函数用于初始化和更新 Giscus 评论区
+const updateGiscus = () => {
+  // 如果是首页 (layout: home)，通常不显示评论区
+  if (frontmatter.value.layout === 'home') return
 
-const { Layout } = escookTheme;
+  const script = document.createElement('script')
+  script.src = "https://giscus.app/client.js"
+  script.setAttribute('data-repo', "AL-sama0/al_discuss")
+  script.setAttribute('data-repo-id', "R_kgDOR2vl7Q")
+  script.setAttribute('data-category-id', "DIC_kwDOR2vl7c4C5wvU")
+  script.setAttribute('data-mapping', "pathname")
+  script.setAttribute('data-strict', "0")
+  script.setAttribute('data-reactions-enabled', "1")
+  script.setAttribute('data-emit-metadata', "0")
+  script.setAttribute('data-input-position', "top")
+  script.setAttribute('data-theme', "transparent_dark") // 你可以改成 light 或 dark
+  script.setAttribute('data-lang', "zh-CN")
+  script.setAttribute('data-loading', "lazy")
+  script.setAttribute('crossorigin', "anonymous")
+  script.async = true
 
-watch(isDark, (dark) => {
-    if (!inBrowser) return;
+  const container = document.querySelector('#giscus-container')
+  if (container) {
+    container.innerHTML = ''
+    container.appendChild(script)
+  }
+}
 
-    const iframe = document
-        .querySelector("giscus-widget")
-        ?.shadowRoot?.querySelector("iframe");
+onMounted(() => {
+  updateGiscus()
+})
 
-    iframe?.contentWindow?.postMessage(
-        { giscus: { setConfig: { theme: dark ? "dark" : "light" } } },
-        "https://giscus.app"
-    );
-});
-
+// 路由变化时重新加载评论区
+watch(
+  () => route.path,
+  () => nextTick(() => updateGiscus())
+)
 </script>
+
 <template>
-    <Layout>
-        <template #doc-footer-before> </template>
-        <template #doc-after>
-            <div style="margin-top: 24px">
-                <Giscus id="comments" repo="用户名/仓库名" repoId="仓库Id" category="分类名称"
-                    categoryId="分类Id" mapping="pathname" strict="0" reactions-enabled="1"
-                    emit-metadata="0" input-position="bottom" lang="zh-CN" crossorigin="anonymous"
-                    :theme="isDark ? 'dark' : 'light'" />
-            </div>
-        </template>
-    </Layout>
+  <Layout>
+    <template #doc-after>
+      <div id="giscus-container" style="margin-top: 3rem; border-top: 1px solid var(--vp-c-divider); padding-top: 2rem;"></div>
+    </template>
+  </Layout>
 </template>
-<style scoped></style>
