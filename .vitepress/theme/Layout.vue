@@ -1,10 +1,11 @@
 <script setup>
 import DefaultTheme from 'vitepress/theme'
-import { useData } from 'vitepress'
+import { useData, useRoute } from 'vitepress'
 import { onMounted, watch, nextTick } from 'vue'
 
 const { Layout } = DefaultTheme
-const { route, frontmatter } = useData()
+const route = useRoute()
+const { frontmatter } = useData()
 
 const updateGiscus = () => {
   // 首页不加载评论
